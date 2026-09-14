@@ -1,13 +1,17 @@
-
-# Python virtual environment
+# Python virtual environments
 .venv/
+venv/
+env/
 
 # Python cache
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
 
 # YOLO model weights
 *.pt
+*.onnx
 
 # YOLO generated results
 runs/
@@ -15,10 +19,23 @@ runs/
 # Video and generated image files
 *.mp4
 *.avi
-ml_person_3/data/first_frame.jpg
-ml_person_3/data/frame_10_seconds.jpg
+
 # Generated traffic analysis outputs
 Outputs/
 
 # Input/test videos and images
 Videos/
+
+# ML2 generated/sample images
+ml_person_3/data/first_frame.jpg
+ml_person_3/data/frame_10_seconds.jpg
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# VS Code settings
+.vscode/
+
+# Operating system files
+.DS_Store
+Thumbs.db
