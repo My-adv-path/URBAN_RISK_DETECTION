@@ -1,0 +1,13 @@
+
+# Python virtual environment
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# YOLO model weights
+*.pt
+
+# YOLO generated results
+runs/
