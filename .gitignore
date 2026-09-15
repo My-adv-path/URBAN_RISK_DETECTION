@@ -11,3 +11,9 @@ __pycache__/
 
 # YOLO generated results
 runs/
+
+# Video and generated image files
+*.mp4
+*.avi
+ml_person_3/data/first_frame.jpg
+ml_person_3/data/frame_10_seconds.jpg

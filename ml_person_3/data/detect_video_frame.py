@@ -1,13 +1,15 @@
-
 from ultralytics import YOLO
 
-# Load a pretrained YOLO model
+# Load the YOLO model
 model = YOLO("yolo11n.pt")
 
-# Detect objects in our road image
-results = model("ml_person_3/data/road.jpg", save=True)
+# Detect objects in the clean video frame
+results = model(
+    "ml_person_3/data/frame_10_seconds.jpg",
+    save=True
+)
 
-# Print the objects detected in the image
+# Print detected objects
 for box in results[0].boxes:
     class_id = int(box.cls[0])
     object_name = results[0].names[class_id]
