@@ -1,0 +1,170 @@
+[
+    {
+        "event_type": "car",
+        "confidence": 0.73,
+        "bbox": [
+            266,
+            430,
+            411,
+            506
+        ],
+        "timestamp": "2026-09-15T17:07:23.574015",
+        "image": "Outputs/events/event_0001.jpg",
+        "latitude": 13.08,
+        "longitude": 80.27
+    },
+    {
+        "event_type": "motorcycle",
+        "confidence": 0.775,
+        "bbox": [
+            298,
+            436,
+            390,
+            546
+        ],
+        "timestamp": "2026-09-15T17:07:23.814015",
+        "image": "Outputs/events/event_0002.jpg",
+        "latitude": 13.08,
+        "longitude": 80.27
+    },
+    {
+        "event_type": "motorcycle",
+        "confidence": 0.65,
+        "bbox": [
+            321,
+            457,
+            380,
+            518
+        ],
+        "timestamp": "2026-09-15T17:07:25.774015",
+        "image": "Outputs/events/event_0003.jpg",
+        "latitude": 13.08,
+        "longitude": 80.27
+    },
+    {
+        "event_type": "car",
+        "confidence": 0.4,
+        "bbox": [
+            239,
+            427,
+            439,
+            530
+        ],
+        "timestamp": "2026-09-15T17:07:27.174015",
+        "image": "Outputs/events/event_0004.jpg",
+        "latitude": 13.08,
+        "longitude": 80.27
+    },
+    {
+        "event_type": "auto",
+        "confidence": 0.907,
+        "bbox": [
+            282,
+            415,
+            413,
+            527
+        ],
+        "timestamp": "2026-09-15T17:07:29.574015",
+        "image": "Outputs/events/event_0005.jpg",
+        "latitude": 13.08,
+        "longitude": 80.27
+    },
+    {
+        "event_type": "motorcycle",
+        "confidence": 0.73,
+        "bbox": [
+            235,
+            488,
+            422,
+            680
+        ],
+        "timestamp": "2026-09-15T17:07:30.534015",
+        "image": "Outputs/events/event_0006.jpg",
+        "latitude": 13.08,
+        "longitude": 80.27
+    },
+    {
+        "event_type": "car",
+        "confidence": 0.921,
+        "bbox": [
+            122,
+            390,
+            548,
+            637
+        ],
+        "timestamp": "2026-09-15T17:07:31.574015",
+        "image": "Outputs/events/event_0007.jpg",
+        "latitude": 13.08,
+        "longitude": 80.27
+    },
+    {
+        "event_type": "truck",
+        "confidence": 0.688,
+        "bbox": [
+            212,
+            392,
+            479,
+            539
+        ],
+        "timestamp": "2026-09-15T17:07:32.814015",
+        "image": "Outputs/events/event_0008.jpg",
+        "latitude": 13.08,
+        "longitude": 80.27
+    },
+    {
+        "event_type": "auto",
+        "confidence": 0.93,
+        "bbox": [
+            262,
+            410,
+            431,
+            547
+        ],
+        "timestamp": "2026-09-15T17:07:34.094015",
+        "image": "Outputs/events/event_0009.jpg",
+        "latitude": 13.08,
+        "longitude": 80.27
+    },
+    {
+        "event_type": "car",
+        "confidence": 0.759,
+        "bbox": [
+            161,
+            383,
+            508,
+            589
+        ],
+        "timestamp": "2026-09-15T17:07:35.134015",
+        "image": "Outputs/events/event_0010.jpg",
+        "latitude": 13.08,
+        "longitude": 80.27
+    },
+    {
+        "event_type": "motorcycle",
+        "confidence": 0.672,
+        "bbox": [
+            257,
+            467,
+            444,
+            684
+        ],
+        "timestamp": "2026-09-15T17:07:35.614015",
+        "image": "Outputs/events/event_0011.jpg",
+        "latitude": 13.08,
+        "longitude": 80.27
+    },
+    {
+        "event_type": "auto",
+        "confidence": 0.908,
+        "bbox": [
+            279,
+            416,
+            402,
+            523
+        ],
+        "timestamp": "2026-09-15T17:07:36.254015",
+        "image": "Outputs/events/event_0012.jpg",
+        "latitude": 13.08,
+        "longitude": 80.27
+    }
+]
