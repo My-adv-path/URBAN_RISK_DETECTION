@@ -1,0 +1,56 @@
+[
+    {
+        "event_type": "traffic_violation",
+        "timestamp": "00:00",
+        "latitude": 13.0827,
+        "longitude": 80.2707,
+        "confidence": 0.78,
+        "severity": "MEDIUM",
+        "image": "event_001.jpg"
+    },
+    {
+        "event_type": "traffic_violation",
+        "timestamp": "00:00",
+        "latitude": 13.0827,
+        "longitude": 80.2707,
+        "confidence": 0.74,
+        "severity": "MEDIUM",
+        "image": "event_002.jpg"
+    },
+    {
+        "event_type": "traffic_violation",
+        "timestamp": "00:01",
+        "latitude": 13.0827,
+        "longitude": 80.2707,
+        "confidence": 0.67,
+        "severity": "MEDIUM",
+        "image": "event_003.jpg"
+    },
+    {
+        "event_type": "traffic_violation",
+        "timestamp": "00:03",
+        "latitude": 13.0827,
+        "longitude": 80.2707,
+        "confidence": 0.76,
+        "severity": "MEDIUM",
+        "image": "event_004.jpg"
+    },
+    {
+        "event_type": "traffic_violation",
+        "timestamp": "00:03",
+        "latitude": 13.0827,
+        "longitude": 80.2707,
+        "confidence": 0.74,
+        "severity": "MEDIUM",
+        "image": "event_005.jpg"
+    },
+    {
+        "event_type": "traffic_violation",
+        "timestamp": "00:10",
+        "latitude": 13.0827,
+        "longitude": 80.2707,
+        "confidence": 0.73,
+        "severity": "MEDIUM",
+        "image": "event_006.jpg"
+    }
+]
