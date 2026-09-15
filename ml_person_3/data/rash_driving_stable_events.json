@@ -1,0 +1,29 @@
+[
+  {
+    "event_type": "rash_driving",
+    "vehicle_id": 1,
+    "estimated_speed": 45.01,
+    "speed_limit": 45,
+    "timestamp": "2026-09-15T15:40:16.264654",
+    "confidence": 0.8,
+    "severity": "HIGH"
+  },
+  {
+    "event_type": "rash_driving",
+    "vehicle_id": 14,
+    "estimated_speed": 45.35,
+    "speed_limit": 45,
+    "timestamp": "2026-09-15T15:41:34.025594",
+    "confidence": 0.8,
+    "severity": "HIGH"
+  },
+  {
+    "event_type": "rash_driving",
+    "vehicle_id": 39,
+    "estimated_speed": 46.13,
+    "speed_limit": 45,
+    "timestamp": "2026-09-15T15:42:33.723290",
+    "confidence": 0.8,
+    "severity": "HIGH"
+  }
+]
