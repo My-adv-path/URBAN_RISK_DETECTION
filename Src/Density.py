@@ -1,46 +1,45 @@
 import cv2
 from ultralytics import YOLO
 
-VIDEO_PATH = "Videos/traffic.mp4"
+VIDEO_PATH = "Videos/indian_traffic.mp4"
+MODEL_PATH = "Models/UVH-26-MV-YOLOv11-S.pt"
 
-model = YOLO("yolo26n.pt")
+model = YOLO(MODEL_PATH)
 
-VEHICLE_CLASSES = {
-    "car",
-    "bus",
-    "truck",
-    "motorcycle",
-    "bicycle"
+CLASS_MAP = {
+    "Hatchback": "car",
+    "Sedan": "car",
+    "SUV": "car",
+    "MUV": "car",
+    "Van": "car",
+    "Three-wheeler": "auto",
+    "Bus": "bus",
+    "Mini-bus": "bus",
+    "Truck": "truck",
+    "LCV": "truck",
+    "tempo-traveller": "truck",
+    "Two-wheeler": "motorcycle"
 }
 
 cap = cv2.VideoCapture(VIDEO_PATH)
 
 if not cap.isOpened():
     print("ERROR: Could not open video.")
-    exit()
+    raise SystemExit
 
 frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
 print(f"Video size: {frame_width} x {frame_height}")
 
-# -----------------------------------
-# ROAD REGION
-# -----------------------------------
+ROI_X1 = 100
+ROI_Y1 = 180
+ROI_X2 = 1200
+ROI_Y2 = 620
 
-# For your 1920 x 1080 video.
-# We will start with a simple rectangular ROI.
-ROI_X1 = 200
-ROI_Y1 = 300
-ROI_X2 = 1720
-ROI_Y2 = 950
-
-# Maximum number of vehicles that we
-# consider "100% occupied" for prototype.
-MAX_VEHICLES = 30
+MAX_VEHICLES = 50
 
 while True:
-
     success, frame = cap.read()
 
     if not success:
@@ -50,16 +49,14 @@ while True:
         frame,
         persist=True,
         tracker="bytetrack.yaml",
-        conf=0.35,
+        conf=0.40,
         verbose=False
     )
 
     result = results[0]
-
     vehicle_centers = []
 
-    if result.boxes.id is not None:
-
+    if result.boxes is not None and result.boxes.id is not None:
         track_ids = result.boxes.id.int().cpu().tolist()
         class_ids = result.boxes.cls.int().cpu().tolist()
         boxes = result.boxes.xyxy.cpu().tolist()
@@ -69,10 +66,10 @@ while True:
             class_ids,
             boxes
         ):
+            raw_class = result.names[int(class_id)]
+            vehicle_type = CLASS_MAP.get(raw_class)
 
-            class_name = result.names[class_id]
-
-            if class_name not in VEHICLE_CLASSES:
+            if vehicle_type is None:
                 continue
 
             x1, y1, x2, y2 = box
@@ -80,19 +77,16 @@ while True:
             center_x = int((x1 + x2) / 2)
             center_y = int((y1 + y2) / 2)
 
-            # Check whether center is inside ROI
             inside_roi = (
                 ROI_X1 <= center_x <= ROI_X2
                 and ROI_Y1 <= center_y <= ROI_Y2
             )
 
             if inside_roi:
-
                 vehicle_centers.append(
                     (center_x, center_y)
                 )
 
-                # Draw green center point
                 cv2.circle(
                     frame,
                     (center_x, center_y),
@@ -101,9 +95,16 @@ while True:
                     -1
                 )
 
+                cv2.putText(
+                    frame,
+                    vehicle_type,
+                    (center_x + 8, center_y),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.5,
+                    (0, 255, 0),
+                    2
+                )
             else:
-
-                # Draw normal center point
                 cv2.circle(
                     frame,
                     (center_x, center_y),
@@ -112,34 +113,21 @@ while True:
                     -1
                 )
 
-    # -----------------------------------
-    # DENSITY
-    # -----------------------------------
-
     active_vehicles = len(vehicle_centers)
 
     density = active_vehicles / MAX_VEHICLES
-
     density = min(density, 1.0)
 
-    # Convert to percentage
     density_percent = density * 100
 
     if density < 0.30:
         density_level = "LOW"
-
     elif density < 0.60:
         density_level = "MEDIUM"
-
     elif density < 0.80:
         density_level = "HIGH"
-
     else:
         density_level = "VERY HIGH"
-
-    # -----------------------------------
-    # DRAW ROI
-    # -----------------------------------
 
     cv2.rectangle(
         frame,
@@ -158,10 +146,6 @@ while True:
         (255, 0, 0),
         2
     )
-
-    # -----------------------------------
-    # DISPLAY DENSITY
-    # -----------------------------------
 
     cv2.putText(
         frame,

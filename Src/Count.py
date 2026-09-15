@@ -1,48 +1,52 @@
 import cv2
 from ultralytics import YOLO
 
-VIDEO_PATH = "Videos/traffic.mp4"
+VIDEO_PATH = "Videos/indian_traffic.mp4"
+MODEL_PATH = "Models/UVH-26-MV-YOLOv11-S.pt"
 
-model = YOLO("yolo26n.pt")
+model = YOLO(MODEL_PATH)
 
-VEHICLE_CLASSES = {
-    "car",
-    "bus",
-    "truck",
-    "motorcycle",
-    "bicycle"
+CLASS_MAP = {
+    "Hatchback": "car",
+    "Sedan": "car",
+    "SUV": "car",
+    "MUV": "car",
+    "Van": "car",
+    "Three-wheeler": "auto",
+    "Bus": "bus",
+    "Mini-bus": "bus",
+    "Truck": "truck",
+    "LCV": "truck",
+    "tempo-traveller": "truck",
+    "Two-wheeler": "motorcycle"
 }
 
-counted_ids = set()
-
-vehicle_counts = {
+counts = {
     "car": 0,
+    "auto": 0,
     "bus": 0,
     "truck": 0,
-    "motorcycle": 0,
-    "bicycle": 0
+    "motorcycle": 0
 }
 
-previous_positions = {}
+counted = set()
+previous_x = {}
 
 cap = cv2.VideoCapture(VIDEO_PATH)
 
 if not cap.isOpened():
     print("ERROR: Could not open video.")
-    exit()
+    raise SystemExit
 
-# Get video dimensions
-frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-# Put counting line at 60% of frame height
-LINE_Y = int(frame_height * 0.60)
+line_x = int(width * 0.20)
 
-print(f"Video size: {frame_width} x {frame_height}")
-print(f"Counting line Y: {LINE_Y}")
+print(f"Video size: {width} x {height}")
+print(f"Counting line X: {line_x}")
 
 while True:
-
     success, frame = cap.read()
 
     if not success:
@@ -52,120 +56,102 @@ while True:
         frame,
         persist=True,
         tracker="bytetrack.yaml",
-        conf=0.35,
+        conf=0.40,
         verbose=False
     )
 
     result = results[0]
+    tracked = 0
 
-    # Draw counting line
     cv2.line(
         frame,
-        (0, LINE_Y),
-        (frame_width, LINE_Y),
+        (line_x, 0),
+        (line_x, height),
         (0, 255, 0),
         3
     )
 
-    # Add label for line
     cv2.putText(
         frame,
         "COUNTING LINE",
-        (20, LINE_Y - 10),
+        (line_x + 10, 30),
         cv2.FONT_HERSHEY_SIMPLEX,
         0.7,
         (0, 255, 0),
         2
     )
 
-    current_tracked = 0
-
-    if result.boxes.id is not None:
-
-        track_ids = result.boxes.id.int().cpu().tolist()
-        class_ids = result.boxes.cls.int().cpu().tolist()
-        confidences = result.boxes.conf.cpu().tolist()
+    if result.boxes is not None and result.boxes.id is not None:
+        ids = result.boxes.id.int().cpu().tolist()
+        classes = result.boxes.cls.int().cpu().tolist()
         boxes = result.boxes.xyxy.cpu().tolist()
 
-        current_tracked = len(track_ids)
+        for track_id, class_id, box in zip(ids, classes, boxes):
+            raw_name = result.names[class_id]
+            name = CLASS_MAP.get(raw_name)
 
-        for track_id, class_id, confidence, box in zip(
-            track_ids,
-            class_ids,
-            confidences,
-            boxes
-        ):
-
-            class_name = result.names[class_id]
-
-            if class_name not in VEHICLE_CLASSES:
+            if name is None:
                 continue
+
+            tracked += 1
 
             x1, y1, x2, y2 = box
 
-            center_x = int((x1 + x2) / 2)
-            center_y = int((y1 + y2) / 2)
+            cx = int((x1 + x2) / 2)
+            cy = int((y1 + y2) / 2)
 
-            # Draw center point
-            cv2.circle(
+            cv2.rectangle(
                 frame,
-                (center_x, center_y),
-                5,
-                (0, 0, 255),
-                -1
+                (int(x1), int(y1)),
+                (int(x2), int(y2)),
+                (255, 255, 255),
+                2
             )
 
-            # Draw object label
             cv2.putText(
                 frame,
-                f"{class_name} ID:{track_id}",
-                (int(x1), max(20, int(y1) - 10)),
+                f"{name} {track_id}",
+                (int(x1), max(20, int(y1) - 8)),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.5,
                 (255, 255, 255),
                 2
             )
 
-            # Check crossing
-            if track_id in previous_positions:
+            cv2.circle(
+                frame,
+                (cx, cy),
+                4,
+                (0, 0, 255),
+                -1
+            )
 
-                previous_y = previous_positions[track_id]
+            if track_id in previous_x:
+                old_x = previous_x[track_id]
 
-                crossed_down = (
-                    previous_y < LINE_Y
-                    and center_y >= LINE_Y
+                crossed = (
+                    (old_x < line_x <= cx)
+                    or
+                    (old_x > line_x >= cx)
                 )
 
-                crossed_up = (
-                    previous_y > LINE_Y
-                    and center_y <= LINE_Y
-                )
+                if crossed and track_id not in counted:
+                    counted.add(track_id)
+                    counts[name] += 1
 
-                if (
-                    (crossed_down or crossed_up)
-                    and track_id not in counted_ids
-                ):
-
-                    counted_ids.add(track_id)
-                    vehicle_counts[class_name] += 1
-
-                    direction = (
-                        "DOWN" if crossed_down else "UP"
-                    )
+                    direction = "RIGHT" if cx > old_x else "LEFT"
 
                     print(
-                        f"COUNTED: "
-                        f"{class_name} "
+                        f"COUNTED: {name} "
                         f"ID={track_id} "
                         f"Direction={direction}"
                     )
 
-            previous_positions[track_id] = center_y
+            previous_x[track_id] = cx
 
-    # Display current tracked objects
     cv2.putText(
         frame,
-        f"Tracked vehicles: {current_tracked}",
+        f"Tracked vehicles: {tracked}",
         (20, 35),
         cv2.FONT_HERSHEY_SIMPLEX,
         0.7,
@@ -173,24 +159,24 @@ while True:
         2
     )
 
-    # Display counts
     y = 70
 
-    for vehicle_type, count in vehicle_counts.items():
-
+    for name, value in counts.items():
         cv2.putText(
             frame,
-            f"{vehicle_type}: {count}",
+            f"{name}: {value}",
             (20, y),
             cv2.FONT_HERSHEY_SIMPLEX,
             0.6,
             (255, 255, 255),
             2
         )
-
         y += 30
 
-    cv2.imshow("ML-2 Vehicle Counting", frame)
+    cv2.imshow(
+        "ML-2 Vehicle Counting",
+        frame
+    )
 
     if cv2.waitKey(1) & 0xFF == ord("q"):
         break
@@ -202,5 +188,5 @@ print("\n============================")
 print("FINAL VEHICLE COUNTS")
 print("============================")
 
-for vehicle_type, count in vehicle_counts.items():
-    print(f"{vehicle_type}: {count}")
+for name, value in counts.items():
+    print(f"{name}: {value}")

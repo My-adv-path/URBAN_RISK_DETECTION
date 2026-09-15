@@ -1,13 +1,35 @@
 from ultralytics import YOLO
 
-# Load the pretrained YOLO model
-model = YOLO("yolo26n.pt")
+model = YOLO("../Models/UVH-26-MV-YOLOv11-S.pt")
 
-# Run detection on the traffic image
-results = model("Videos/traffic.jpg")
+results = model("Videos/india_traffic.png", conf=0.40)
 
-# Save the image with bounding boxes and labels
+class_map = {
+    "Hatchback": "Car",
+    "Sedan": "Car",
+    "SUV": "Car",
+    "MUV": "Car",
+    "Van": "Car",
+    "Three-wheeler": "Auto",
+    "Bus": "Bus",
+    "Mini-bus": "Bus",
+    "Truck": "Truck",
+    "LCV": "Truck",
+    "tempo-traveller": "Truck",
+    "Two-wheeler": "Motorcycle"
+}
+
 for result in results:
+    for cls, conf in zip(
+        result.boxes.cls.tolist(),
+        result.boxes.conf.tolist()
+    ):
+        raw_class = model.names[int(cls)]
+        final_class = class_map.get(raw_class)
+
+        if final_class:
+            print(f"{raw_class} -> {final_class} ({conf:.2f})")
+
     result.save(filename="Outputs/traffic_detected.jpg")
 
 print("Detection complete!")
